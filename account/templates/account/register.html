@@ -18,7 +18,7 @@
 <body>
     <header>
         <div class="head">
-            <a href="" class="select" style="color: #588d45">Login</a>
+            <a href="/" class="select" style="color: #588d45">Login</a>
             <a href="" class="select">Register</a>
         </div>
     </header>
@@ -31,23 +31,32 @@
         <div class="box2">
             <h2>Join DMEZ</h2>
             <hr />
-            <form>
+            {% if messages %}
+            {% for msg in messages %}
+            <p> 
+            {{msg.0}}: {{msg.1.0}}
+            </p>
+            {% endfor %}
+            {%endif%}
+            <form action="/register/user" method="POST">
+                {%csrf_token%}
                 <div class="input">
                     <span>Full Name</span>
-                    <input type="text" name="name" required />
+                    <input type="text" name="name" />
+                    <span></span>
                 </div>
                 <div class="input">
                     <span >Mobile Number</span>
-                    <input type="number" name="contact" required />
+                    <input type="number" name="contact" />
                 </div>
                 <div class="input">
                     <span>Email</span>
-                    <input type="email" name="email" required />
+                    <input type="email" name="email"  />
                 </div>
 
                 <div class="input">
-                    <span>Create Password</span>
-                    <input type="password" name="password" required />
+                    <span>Password</span>
+                    <input type="password" name="password"/>
                 </div>
               <a href="">already a user? Sign In</a>
         

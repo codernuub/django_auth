@@ -16,7 +16,7 @@
 <header>
     <div class="head">
         <a href="" class="select" style="color: #588d45">Login</a>
-        <a href="" class="select">Register</a>
+        <a href="/register" class="select">Register</a>
     </div>
 </header>
 <!--placeholder="Mobile Number or Email"-->
@@ -27,18 +27,18 @@
  
     <div class="box2">
         <h2>Login</h2>
-        <h3>{{ message }}</h3>
+        <p>{{ message }}</p>
         <hr />
         <form action="/login" method="POST">
             {% csrf_token %}
             <div class="input">
                 <span>Email or phone number</span>
-                <input type="text" name="id" required />
+                <input type="text" name="id" />
             </div>
 
             <div class="input">
                 <span> Password</span>
-                <input type="password" name="password" required />
+                <input type="password" name="password"  />
             </div>
 
             <a href="">Forget password ?</a>
