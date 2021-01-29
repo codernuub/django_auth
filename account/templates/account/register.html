@@ -33,32 +33,30 @@
             <hr />
             {% if messages %}
             {% for msg in messages %}
-            <p> 
-            {{msg.0}}: {{msg.1.0}}
-            </p>
+            <p>{{msg.1.0}}</p>
             {% endfor %}
             {%endif%}
             <form action="/register/user" method="POST">
                 {%csrf_token%}
                 <div class="input">
                     <span>Full Name</span>
-                    <input type="text" name="name" />
+                    <input type="text" name="name" required/>
                     <span></span>
                 </div>
                 <div class="input">
                     <span >Mobile Number</span>
-                    <input type="number" name="contact" />
+                    <input type="number" name="contact" required/>
                 </div>
                 <div class="input">
                     <span>Email</span>
-                    <input type="email" name="email"  />
+                    <input type="email" name="email"  required/>
                 </div>
 
                 <div class="input">
                     <span>Password</span>
-                    <input type="password" name="password"/>
+                    <input type="password" name="password" required/>
                 </div>
-              <a href="">already a user? Sign In</a>
+              <a href="/">already a user? Sign In</a>
         
                 <button>Sign up</button>
             </form>
