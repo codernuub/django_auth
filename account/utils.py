@@ -1,7 +1,8 @@
 import jwt
 import datetime
+from decouple import config
 
-secret = "hack-krne-wale-tera-mu-kala"
+secret = config('TOKEN_SECRET')
 main_site = 'http://127.0.0.1:3000'
 
 # verify token: if not exist, expired or invalid , render login page
