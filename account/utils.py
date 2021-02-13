@@ -36,8 +36,8 @@ def set_cookie(response, token):
     )
     return response
 
-
 def redirect_to_main(id, redirect):
+  print(id)
   response = redirect(main_site)
   token = generate_token(id)
   return set_cookie(response, token)
