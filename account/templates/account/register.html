@@ -36,7 +36,7 @@
             <p>{{msg.1.0}}</p>
             {% endfor %}
             {%endif%}
-            <form action="/register/user" method="POST">
+            <form action="/api/v1/register" method="POST">
                 {%csrf_token%}
                 <div class="input">
                     <span>Full Name</span>

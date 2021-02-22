@@ -29,7 +29,7 @@
         <h2>Login</h2>
         <p>{{ message }}</p>
         <hr />
-        <form action="/login" method="POST">
+        <form action="/api/v1/login" method="POST">
             {% csrf_token %}
             <div class="input">
                 <span>Email</span>

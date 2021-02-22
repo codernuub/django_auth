@@ -3,7 +3,7 @@ import datetime
 from decouple import config
 
 secret = config('TOKEN_SECRET')
-main_site = 'http://127.0.0.1:3000'
+main_site = config('MAIN_SITE')
 
 # verify token: if not exist, expired or invalid , render login page
 def verify_token(token):
@@ -16,6 +16,7 @@ def verify_token(token):
       return False
 
 # generate new token
+
 def generate_token(userId):
     payload = {
         "userId": userId,
@@ -37,7 +38,6 @@ def set_cookie(response, token):
     return response
 
 def redirect_to_main(id, redirect):
-  print(id)
   response = redirect(main_site)
   token = generate_token(id)
   return set_cookie(response, token)

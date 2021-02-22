@@ -7,3 +7,6 @@ class User(models.Model):
     email = models.EmailField(max_length=256, blank=False, unique=True)
     contact = models.BigIntegerField(blank=False,unique=True)
     password = models.CharField(max_length=300)
+    
+    class Meta:
+      db_table = 'users'

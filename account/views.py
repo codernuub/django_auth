@@ -5,17 +5,15 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import User
 from .utils import set_cookie, verify_token, generate_token, redirect_to_main
 
-origin = "127.0.0.1:3000"  # redirect user to this origin
+from decouple import config
+
+main_site = config('MAIN_SITE') # redirect user to this origin
 
 # register page
-
-
 def register(request):
     return render(request, 'account/register.html')
 
 # login page
-
-
 def login(request):
     # check token is valid redirect user to main application
     if verify_token(request.COOKIES.get('token')):
@@ -24,8 +22,6 @@ def login(request):
     return render(request, 'account/login.html')
 
 # register user
-
-
 def registerUser(request):
 
     name = request.POST['name']
@@ -38,9 +34,8 @@ def registerUser(request):
         if password:
             user.password = make_password(password)
         user.full_clean()
-        user.save()
-        print(user._id)
-        return redirect_to_main(user._id, redirect)
+        u = user.save()
+        return redirect_to_main(str(user._id), redirect)
     except Exception as e:
         return render(request, 'account/register.html', {"messages": e})
 
