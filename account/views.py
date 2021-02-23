@@ -1,3 +1,4 @@
+"""
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
@@ -8,8 +9,8 @@ from .utils import set_cookie, verify_token, generate_token, redirect_to_main
 from decouple import config
 
 main_site = config('MAIN_SITE') # redirect user to this origin
-
-# register page
+"""
+"""
 def register(request):
     return render(request, 'account/register.html')
 
@@ -64,3 +65,38 @@ def logUser(request):
         if type(e).__name__ == "DoesNotExist":
             e = "User not found"
         return render(request, 'account/login.html', {"message": e})
+
+
+def getUsers(request):
+"""
+from django.contrib.auth.hashers import make_password, check_password
+
+from rest_framework import status
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+
+from .serializers import UserSerializer, RegisterSerializer
+from .utils import generate_token
+
+
+class TestAPI(generics.GenericAPIView):
+    def post():
+     return Response(data="I m working", status=status.HTTP_200_CREATED)
+
+#Register API
+class RegisterAPI(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        #modify data below
+        request.data['password'] = make_password(request.data['password']); 
+        print(request.data)
+        #modify data above
+        serializer = self.get_serializer(data=request.data)
+    
+        try:
+          serializer.is_valid()
+          user = serializer.save()
+          return Response(serializer.data)
+        except Exception as e:
+          return Response(e, status=status.HTTP_400_BAD_REQUEST)
