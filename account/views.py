@@ -1,102 +1,75 @@
-"""
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+import json
 from django.contrib.auth.hashers import make_password, check_password
+
+from rest_framework import generics, status
+from rest_framework.response import Response
+from django.http import HttpResponse, JsonResponse
+
+from .utils import generate_token, set_cookie, catchError
 
 from .models import User
-from .utils import set_cookie, verify_token, generate_token, redirect_to_main
 
-from decouple import config
+#REGISTER API
+class RegisterAPI(generics.GenericAPIView):
+  
+    def post(self, request, *args, **kwargs):
+        try:
+          request.data['password'] = make_password(request.data['password']); 
+          user = User(
+                name=request.data['name'], 
+                email=request.data['email'],
+                contact=request.data['contact'],
+                password=request.data['password']
+          )
+          user.full_clean()
+          user.save()
+          
+          token = generate_token(str(user._id))
+          responseData = {
+              "status":'success',
+              "message":"logged In",
+              "data":None
+          }
+          response = HttpResponse(json.dumps(responseData), content_type="application/json")
+          return set_cookie(response, token)
 
-main_site = config('MAIN_SITE') # redirect user to this origin
-"""
-"""
-def register(request):
-    return render(request, 'account/register.html')
+        except Exception as e:
+          
+          responseData = {
+              "status":"fail",
+              "message":dict(e)
+          }
+          return JsonResponse(responseData, status=status.HTTP_400_BAD_REQUEST)
 
-# login page
-def login(request):
-    # check token is valid redirect user to main application
-    if verify_token(request.COOKIES.get('token')):
-        return redirect(origin)
+#LOGIN API
+class LoginAPI(generics.GenericAPIView):
+ 
+   def post(self, request, *args, **kwargs):
+        responseData = {}
+        try:
+          username=request.data['data']
+          password=request.data['password']
 
-    return render(request, 'account/login.html')
-
-# register user
-def registerUser(request):
-
-    name = request.POST['name']
-    email = request.POST['email']
-    contact = request.POST['contact']
-    password = request.POST['password']
-
-    try:
-        user = User(name=name, email=email, contact=contact)
-        if password:
-            user.password = make_password(password)
-        user.full_clean()
-        u = user.save()
-        return redirect_to_main(str(user._id), redirect)
-    except Exception as e:
-        return render(request, 'account/register.html', {"messages": e})
-
-
-# log user
-def logUser(request):
-    # validate post data
-    email = request.POST['email']
-    password = request.POST['password']
-
-    try:
-
-        if not email and password:
+          if not username and password:
             raise Exception("Please fill all fields")
 
-        user = User.objects.get(email=email)
-        correct = check_password(password, user.password)
+          user = User.objects.get(contact=username)
+          
+          check_password(request.data['password'], user.password)
 
-        if not correct:
-            raise Exception("Incorrect password")
+          token = generate_token(str(user._id))
 
-        return redirect_to_main(str(user._id), redirect)
+          responseData["status"] = "success"
+          responseData["message"] = "logged In",
 
-    except Exception as e:
-
-        if type(e).__name__ == "DoesNotExist":
-            e = "User not found"
-        return render(request, 'account/login.html', {"message": e})
-
-
-def getUsers(request):
-"""
-from django.contrib.auth.hashers import make_password, check_password
-
-from rest_framework import status
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-
-from .serializers import UserSerializer, RegisterSerializer
-from .utils import generate_token
-
-
-class TestAPI(generics.GenericAPIView):
-    def post():
-     return Response(data="I m working", status=status.HTTP_200_CREATED)
-
-#Register API
-class RegisterAPI(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-
-    def post(self, request, *args, **kwargs):
-        #modify data below
-        request.data['password'] = make_password(request.data['password']); 
-        print(request.data)
-        #modify data above
-        serializer = self.get_serializer(data=request.data)
-    
-        try:
-          serializer.is_valid()
-          user = serializer.save()
-          return Response(serializer.data)
+          response = HttpResponse(json.dumps(responseData), content_type="application/json")
+          return set_cookie(response, token)
         except Exception as e:
-          return Response(e, status=status.HTTP_400_BAD_REQUEST)
+
+          responseData["status"] = "fail"
+
+          if type(e).__name__ == 'DoesNotExist':
+            responseData['message'] = "please provide valid credentials"
+          else :
+            responseData['message'] = str(e)
+          return JsonResponse(responseData, status=status.HTTP_400_BAD_REQUEST)

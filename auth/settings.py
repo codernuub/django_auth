@@ -72,11 +72,12 @@ TEMPLATES = [
 DATABASES = {
       'default': {
             'ENGINE': 'djongo',
-            'NAME': 'productDB',
+            #'NAME': 'productDB',
+            'NAME': 'dmez'
       }
 }
-
-MongoClient.HOST = config('MONGOURI')
+MongoClient.HOST = "mongodb://127.0.0.1:27017"
+# MongoClient.HOST = config('MONGOURI')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

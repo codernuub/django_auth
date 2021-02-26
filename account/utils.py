@@ -3,19 +3,6 @@ import datetime
 from decouple import config
 
 secret = config('TOKEN_SECRET')
-main_site = config('MAIN_SITE')
-
-# verify token: if not exist, expired or invalid , render login page
-def verify_token(token):
-    if not token:
-      return False
-    try:
-      jwt.decode(token, secret, algorithms=["HS256"])
-      return True
-    except:
-      return False
-
-# generate new token
 
 def generate_token(userId):
     payload = {
@@ -37,7 +24,5 @@ def set_cookie(response, token):
     )
     return response
 
-def redirect_to_main(id, redirect):
-  response = redirect(main_site)
-  token = generate_token(id)
-  return set_cookie(response, token)
+def catchError(e):
+  print(e.__name);
