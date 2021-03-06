@@ -46,7 +46,7 @@ class LoginAPI(generics.GenericAPIView):
    def post(self, request, *args, **kwargs):
         responseData = {}
         try:
-          username=request.data['data']
+          username=request.data['username']
           password=request.data['password']
 
           if not username and password:
