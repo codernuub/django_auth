@@ -2,10 +2,9 @@ import json
 from django.contrib.auth.hashers import make_password, check_password
 
 from rest_framework import generics, status
-from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
 
-from .utils import generate_token, set_cookie, catchError
+from .utils import generate_token, set_cookie, response_json
 
 from .models import User
 
