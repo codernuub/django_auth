@@ -19,8 +19,8 @@ def buildQuery(username):
 
 
 def fetchUser(username):
-    query_user = buildQuery(username)
     try:
+       query_user = buildQuery(username)
        return User.objects.get(**query_user)
     except Exception as e:
        return None
@@ -35,15 +35,15 @@ def generate_token(userId):
     return token
 
 #set cookie for token
-def set_cookie(response, token):
-    response.set_cookie(
-        key="token",
-        value=token,
-        max_age=(60 * 60 * 1000),
-        secure=False,
-        domain=domain
-    )
-    return response
+def cookieOptions(token):
+    return {
+        "key":"token",
+        "value":token,
+        "max_age":(60 * 60 * 1000),
+        "secure":False,
+        "domain":domain
+    }
+    
 
 def catchError(e):
   print(e.__name);
