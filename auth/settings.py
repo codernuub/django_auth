@@ -24,7 +24,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://authdmez.herokuapp.com']
+
+ALLOWED_HOSTS = config('ALLOWED_ORIGIN').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -72,12 +73,11 @@ TEMPLATES = [
 DATABASES = {
       'default': {
             'ENGINE': 'djongo',
-            #'NAME': 'productDB',
             'NAME': 'dmez'
       }
 }
-MongoClient.HOST = "mongodb://127.0.0.1:27017"
-# MongoClient.HOST = config('MONGOURI')
+
+MongoClient.HOST = config('MONGOURI')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -97,7 +97,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.SHA1PasswordHasher',
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+    'django.contrib.auth.hashers.CryptPasswordHasher',
+]
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 

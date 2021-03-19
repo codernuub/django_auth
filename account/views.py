@@ -1,74 +1,46 @@
 import json
-from django.contrib.auth.hashers import make_password, check_password
-
+import bcrypt
 from rest_framework import generics, status
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
+from django.contrib.auth import authenticate
 
-from .utils import generate_token, set_cookie, response_json
+from .utils import fetchUser, generate_token, set_cookie
 
-from .models import User
+# LOGIN API
 
-#REGISTER API
-class RegisterAPI(generics.GenericAPIView):
-  
-    def post(self, request, *args, **kwargs):
-        try:
-          request.data['password'] = make_password(request.data['password']); 
-          user = User(
-                name=request.data['name'], 
-                email=request.data['email'],
-                contact=request.data['contact'],
-                password=request.data['password']
-          )
-          user.full_clean()
-          user.save()
-          
-          token = generate_token(str(user._id))
-          responseData = {
-              "status":'success',
-              "message":"logged In",
-              "data":None
-          }
-          response = HttpResponse(json.dumps(responseData), content_type="application/json")
-          return set_cookie(response, token)
 
-        except Exception as e:
-          
-          responseData = {
-              "status":"fail",
-              "message":dict(e)
-          }
-          return JsonResponse(responseData, status=status.HTTP_400_BAD_REQUEST)
-
-#LOGIN API
 class LoginAPI(generics.GenericAPIView):
- 
-   def post(self, request, *args, **kwargs):
-        responseData = {}
+
+    def post(self, request, *args, **kwargs):
+
         try:
-          username=request.data['username']
-          password=request.data['password']
 
-          if not username and password:
-            raise Exception("Please fill all fields")
+            username = request.data["username"]
+            password = request.data["password"]
 
-          user = User.objects.get(contact=username)
-          
-          check_password(request.data['password'], user.password)
+            user = fetchUser(username)
 
-          token = generate_token(str(user._id))
+            if not user:
+                raise Exception("Incorrect username and password")
 
-          responseData["status"] = "success"
-          responseData["message"] = "logged In",
+            check = bcrypt.checkpw(password.encode(
+                'utf8'), user.password.encode('utf8'))
 
-          response = HttpResponse(json.dumps(responseData), content_type="application/json")
-          return set_cookie(response, token)
+            if not check:
+                raise Exception("Incorrect username and password")
+
+                token = generate_token(str(user._id))
+
+                response = HttpResponse(json.dumps({
+                    "status": "success",
+                    "message": "loggedIn",
+                }), content_type="application/json", status=200)
+
+                return set_cookie(response, token)
+
         except Exception as e:
 
-          responseData["status"] = "fail"
-
-          if type(e).__name__ == 'DoesNotExist':
-            responseData['message'] = "please provide valid credentials"
-          else :
-            responseData['message'] = str(e)
-          return JsonResponse(responseData, status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(json.dumps({
+                "status": "fail",
+                "message": str(e)
+            }), content_type="application/json", status=400)
